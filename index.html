@@ -9,583 +9,800 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #1a1a2e;
+      --bg: #0f0f14;
+      --sidebar: #1a1a2e;
       --text: #e0e0e0;
-      --muted: #9a9abb;
+      --muted: #7a7a9a;
       --accent: #e8824a;
       --accent-dark: #d2693a;
-      --card: rgba(255, 255, 255, 0.05);
-      --card-border: rgba(232, 130, 74, 0.2);
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      --card: rgba(255,255,255,0.04);
+      --card-border: rgba(255,255,255,0.08);
+      --accent-glow: rgba(232,130,74,0.18);
+      --accent-border: rgba(232,130,74,0.25);
+      --sidebar-w: 62px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
-      margin: 0;
-      min-height: 100%;
-      background: radial-gradient(circle at top, rgba(232, 130, 74, 0.12), transparent 30%), var(--bg);
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
       color: var(--text);
       font-family: 'Inter', system-ui, sans-serif;
       line-height: 1.6;
     }
 
-    body {
-      padding: 0;
+    .app {
+      display: flex;
+      height: 100vh;
+      height: 100dvh;
     }
 
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 92px 20px 40px;
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar);
+      border-right: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 0 20px;
+      flex-shrink: 0;
+      z-index: 10;
     }
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      backdrop-filter: blur(18px);
-      background: rgba(26, 26, 46, 0.95);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding: 18px 20px 12px;
-    }
-
-    .header-inner {
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: #fff;
+      flex-shrink: 0;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 16px rgba(232,130,74,0.3);
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 2.6rem);
-      letter-spacing: -0.04em;
+    .nav-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
     }
 
-    p.lead {
-      margin: 8px 0 0;
+    .nav-btn {
+      width: 46px;
+      height: 46px;
+      border: none;
+      border-radius: 13px;
+      background: transparent;
       color: var(--muted);
-      font-size: 1rem;
-    }
-
-    .pill {
-      display: inline-flex;
+      cursor: pointer;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.8rem 1rem;
-      border-radius: 999px;
-      border: 1px solid rgba(232,130,74,0.2);
-      background: rgba(232,130,74,0.12);
+      transition: background 0.18s, color 0.18s;
+      position: relative;
+    }
+
+    .nav-btn:hover:not(.disabled) {
+      background: rgba(255,255,255,0.07);
       color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    .nav-btn.disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+    }
+
+    .nav-btn svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 1.8;
+    }
+
+    .nav-btn::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: calc(100% + 12px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: #12121c;
+      color: var(--text);
+      font-size: 0.78rem;
       font-weight: 600;
-      font-size: 0.95rem;
+      padding: 5px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      border: 1px solid rgba(255,255,255,0.09);
+      z-index: 100;
     }
 
-    .primary-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 14px 20px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: white;
-      box-shadow: 0 20px 45px rgba(232,130,74,0.2);
-      transition: transform 0.2s ease, filter 0.2s ease;
-    }
+    .nav-btn:hover::after { opacity: 1; }
 
-    .primary-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.05);
-    }
-
-    .section {
-      margin-top: 26px;
-      display: grid;
-      gap: 20px;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 1.2rem;
-    }
-
-    .task-form {
-      display: grid;
-      gap: 14px;
-    }
-
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-    }
-
-    .field-row input[type="text"], .field-row input[type="date"], textarea {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 14px 16px;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .field-row input::placeholder, textarea::placeholder {
-      color: rgba(224,224,224,0.55);
-    }
-
-    .task-list {
-      display: grid;
-      gap: 14px;
-    }
-
-    .task-item {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 14px;
-      padding: 18px;
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .task-content {
-      display: grid;
-      gap: 10px;
+    /* ─── CONTENT AREA ─── */
+    .content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
       min-width: 0;
     }
 
-    .task-title {
-      margin: 0;
-      font-size: 1rem;
+    .section {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 36px 40px 40px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .section.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .section-head {
+      margin-bottom: 26px;
+    }
+
+    .section-head h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 3px;
+    }
+
+    /* ─── FORM ─── */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--accent-border);
+      border-radius: 18px;
+      padding: 18px 20px;
+      margin-bottom: 28px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 11px;
+      color: var(--text);
+      padding: 11px 14px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"] { width: 100%; }
+    input[type="date"] { flex: 1; min-width: 0; color-scheme: dark; }
+
+    input::placeholder { color: rgba(224,224,224,0.3); }
+    input:focus { border-color: rgba(232,130,74,0.45); }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5) sepia(0.3);
+      cursor: pointer;
+    }
+
+    .primary-btn {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border: none;
+      border-radius: 11px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      font-family: inherit;
+      padding: 11px 18px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: filter 0.18s, transform 0.15s;
+      flex-shrink: 0;
+    }
+
+    .primary-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 11px;
+      color: var(--text);
+      font-size: 0.88rem;
       font-weight: 600;
+      font-family: inherit;
+      padding: 11px 16px;
+      cursor: pointer;
+      transition: background 0.18s;
+      flex-shrink: 0;
+    }
+
+    .secondary-btn:hover { background: rgba(255,255,255,0.11); }
+
+    /* ─── TASK GROUPS ─── */
+    .group-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      margin: 22px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .group-label.urgent { color: var(--accent); }
+
+    .group-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .task-list { display: grid; gap: 7px; }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border-radius: 13px;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      transition: border-color 0.18s;
+    }
+
+    .task-item.urgent-task {
+      border-color: rgba(232,130,74,0.28);
+      background: rgba(232,130,74,0.05);
+    }
+
+    .task-item:hover { border-color: rgba(255,255,255,0.14); }
+
+    .task-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.18);
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+    }
+
+    .task-check:hover { border-color: var(--accent); }
+
+    .task-check.done {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .task-check.done::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+      display: block;
+    }
+
+    .task-body { flex: 1; min-width: 0; }
+
+    .task-title {
+      font-size: 0.93rem;
+      font-weight: 500;
       color: var(--text);
       word-break: break-word;
     }
 
-    .task-title.completed {
+    .task-title.done-text {
       text-decoration: line-through;
-      color: rgba(224,224,224,0.6);
-      font-weight: 500;
+      color: rgba(224,224,224,0.35);
     }
 
-    .task-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
+    .task-date {
+      font-size: 0.78rem;
       color: var(--muted);
-      font-size: 0.95rem;
+      margin-top: 2px;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.07);
-      color: var(--text);
-      font-size: 0.88rem;
-    }
+    .task-date.urgent { color: var(--accent); }
 
-    .badge.urgent {
-      background: rgba(232,130,74,0.18);
-      color: #ffffff;
-      border: 1px solid rgba(232,130,74,0.35);
-    }
-
-    .task-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .task-actions button {
+    .del-btn {
+      background: none;
       border: none;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 600;
+      color: rgba(224,224,224,0.2);
       cursor: pointer;
-      background: rgba(255,255,255,0.08);
-      color: var(--text);
-      transition: background 0.2s ease;
+      padding: 5px;
+      border-radius: 8px;
+      transition: color 0.18s, background 0.18s;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
     }
 
-    .task-actions button:hover {
-      background: rgba(255,255,255,0.14);
+    .del-btn:hover {
+      color: #ff7070;
+      background: rgba(255,112,112,0.1);
     }
 
-    .task-actions .complete-btn {
-      color: var(--accent);
-    }
-
-    .task-actions .delete-btn {
-      color: #ff8383;
-    }
-
-    textarea {
-      min-height: 180px;
-      resize: vertical;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 20px;
-      font-size: 1rem;
-      line-height: 1.7;
-    }
-
-    .note {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-top: -10px;
-    }
+    .del-btn svg { width: 15px; height: 15px; stroke-width: 1.8; }
 
     .empty-state {
-      padding: 24px;
-      border-radius: 20px;
-      border: 1px dashed rgba(255,255,255,0.18);
-      color: var(--muted);
+      padding: 32px 24px;
       text-align: center;
-      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 0.88rem;
+      border: 1px dashed rgba(255,255,255,0.09);
+      border-radius: 14px;
     }
 
-    .focus-panel {
-      background: rgba(26,26,46,0.96);
-      border: 1px solid rgba(232,130,74,0.2);
-      border-radius: 28px;
-      padding: 32px;
-      box-shadow: var(--shadow);
-      display: none;
-      gap: 22px;
-    }
-
-    .focus-panel.active {
-      display: grid;
-    }
-
-    .focus-panel h2 {
-      margin: 0;
-      font-size: 1.3rem;
+    /* ─── FOCUS SECTION ─── */
+    .focus-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 55vh;
+      gap: 0;
     }
 
     .focus-card {
-      background: rgba(255,255,255,0.05);
-      border-radius: 24px;
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--card);
+      border: 1px solid var(--accent-border);
+      border-radius: 22px;
+      padding: 30px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(232,130,74,0.06);
     }
 
-    .focus-card .task-title {
-      font-size: 1.3rem;
-      margin-bottom: 12px;
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .secondary-btn {
-      border: 1px solid rgba(255,255,255,0.14);
-      background: transparent;
-      color: var(--text);
-      border-radius: 999px;
-      padding: 12px 16px;
-      cursor: pointer;
+    .focus-eyebrow {
+      font-size: 0.72rem;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 14px;
     }
 
-    @media (max-width: 560px) {
-      .field-row {
-        grid-template-columns: 1fr;
-      }
+    .focus-task-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      word-break: break-word;
+    }
 
-      .task-item {
-        grid-template-columns: 1fr;
-      }
+    .focus-task-date {
+      font-size: 0.82rem;
+      margin-top: 10px;
+    }
 
-      .task-actions {
-        align-items: stretch;
+    .focus-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    /* ─── DUMP SECTION ─── */
+    .dump-surface {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 22px 24px;
+    }
+
+    .dump-ta {
+      width: 100%;
+      min-height: 62vh;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      resize: none;
+      caret-color: var(--accent);
+    }
+
+    .dump-ta::placeholder { color: rgba(224,224,224,0.2); }
+
+    /* ─── MOBILE BOTTOM BAR ─── */
+    @media (max-width: 600px) {
+      .app { flex-direction: column; }
+
+      .sidebar {
+        width: 100%;
+        height: 58px;
         flex-direction: row;
-        justify-content: space-between;
+        order: 2;
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        padding: 0 20px;
+        justify-content: space-around;
+        align-items: center;
+        margin-bottom: env(safe-area-inset-bottom, 0px);
       }
+
+      .logo { display: none; }
+
+      .nav-items {
+        flex-direction: row;
+        gap: 0;
+        flex: 1;
+        justify-content: space-around;
+      }
+
+      .nav-btn::after { display: none; }
+
+      .content { order: 1; }
+
+      .section { padding: 22px 18px 28px; }
+
+      .form-row { flex-wrap: wrap; }
+
+      input[type="date"] { flex-basis: 100%; }
+
+      .focus-card { padding: 22px 20px; }
+
+      .focus-task-title { font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-inner">
-      <div>
-        <h1>OrganizaTDA</h1>
-        <p class="lead">Gestión personal adaptada para tu atención. Menos ruido, más acción.</p>
-      </div>
-      <button id="focusButton" class="primary-btn">¿Qué hago ahora?</button>
-    </div>
-  </header>
-  <main>
-    <section class="section">
-      <div class="card">
-        <h2>Nueva tarea</h2>
-        <form id="taskForm" class="task-form" autocomplete="off">
-          <input id="taskTitle" type="text" placeholder="Qué quieres hacer" required />
-          <div class="field-row">
-            <input id="taskDate" type="date" />
-            <button type="submit" class="primary-btn">Añadir tarea</button>
-          </div>
-        </form>
-      </div>
+  <div class="app">
 
-      <div class="card focus-panel" id="focusPanel">
-        <div class="focus-header">
-          <h2>Enfoque ahora</h2>
-          <p class="note">Solo la tarea más urgente para ayudarte a concentrarte.</p>
+    <!-- ─── SIDEBAR ─── -->
+    <nav class="sidebar">
+      <div class="logo">O</div>
+      <div class="nav-items">
+
+        <button class="nav-btn active" data-section="tasks" data-tip="Tareas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/>
+            <circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/>
+            <circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/>
+            <circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+
+        <button class="nav-btn" data-section="focus" data-tip="Foco">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+
+        <button class="nav-btn" data-section="dump" data-tip="Dump mental">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </button>
+
+        <button class="nav-btn disabled" data-tip="Hábitos (próximamente)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- ─── MAIN CONTENT ─── -->
+    <main class="content">
+
+      <!-- TAREAS -->
+      <section id="section-tasks" class="section active">
+        <div class="section-head">
+          <h1>Tareas</h1>
+          <p>Menos ruido, más acción.</p>
+        </div>
+
+        <div class="form-card">
+          <form id="taskForm" autocomplete="off">
+            <input id="taskTitle" type="text" placeholder="¿Qué tienes que hacer?" required />
+            <div class="form-row">
+              <input id="taskDate" type="date" />
+              <button type="submit" class="primary-btn">Añadir</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="taskList"></div>
+      </section>
+
+      <!-- FOCO -->
+      <section id="section-focus" class="section">
+        <div class="section-head">
+          <h1>Foco</h1>
+          <p>Una sola cosa a la vez.</p>
         </div>
         <div id="focusContent"></div>
-        <div class="actions-row">
-          <button id="backButton" class="secondary-btn">Volver a la vista normal</button>
-        </div>
-      </div>
+      </section>
 
-      <div class="card">
-        <div class="section-title">
-          <h2>Lista de tareas</h2>
+      <!-- DUMP MENTAL -->
+      <section id="section-dump" class="section">
+        <div class="section-head">
+          <h1>Dump mental</h1>
+          <p>Vacíalo todo. Se guarda automáticamente.</p>
         </div>
-        <div id="taskList" class="task-list"></div>
-      </div>
+        <div class="dump-surface">
+          <textarea id="brainDump" class="dump-ta" placeholder="Escribe sin estructura. Todo lo que tengas en la cabeza..."></textarea>
+        </div>
+      </section>
 
-      <div class="card">
-        <h2>Dump mental</h2>
-        <p class="note">Escribe sin estructura. Se guarda automáticamente.</p>
-        <textarea id="brainDump" placeholder="Vacíalo todo aquí..."></textarea>
-      </div>
-    </section>
-  </main>
+    </main>
+  </div>
 
   <script>
     const STORAGE_TASKS = 'organizaTDA-tasks';
-    const STORAGE_DUMP = 'organizaTDA-dump';
-
-    const taskForm = document.getElementById('taskForm');
-    const taskTitle = document.getElementById('taskTitle');
-    const taskDate = document.getElementById('taskDate');
-    const taskList = document.getElementById('taskList');
-    const brainDump = document.getElementById('brainDump');
-    const focusButton = document.getElementById('focusButton');
-    const focusPanel = document.getElementById('focusPanel');
-    const focusContent = document.getElementById('focusContent');
-    const backButton = document.getElementById('backButton');
+    const STORAGE_DUMP  = 'organizaTDA-dump';
 
     let tasks = [];
-    let isFocusedView = false;
+    let activeSection = 'tasks';
 
+    /* ─── Navigation ─── */
+    document.querySelectorAll('.nav-btn[data-section]').forEach(btn => {
+      btn.addEventListener('click', () => switchSection(btn.dataset.section));
+    });
+
+    function switchSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('section-' + name).classList.add('active');
+      document.querySelector(`.nav-btn[data-section="${name}"]`).classList.add('active');
+      activeSection = name;
+      if (name === 'focus') renderFocus();
+    }
+
+    /* ─── Storage ─── */
     function loadTasks() {
-      const saved = localStorage.getItem(STORAGE_TASKS);
-      tasks = saved ? JSON.parse(saved) : [];
+      try { tasks = JSON.parse(localStorage.getItem(STORAGE_TASKS)) || []; }
+      catch { tasks = []; }
     }
 
-    function saveTasks() {
-      localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks));
-    }
+    function saveTasks() { localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks)); }
 
     function loadDump() {
-      brainDump.value = localStorage.getItem(STORAGE_DUMP) || '';
+      document.getElementById('brainDump').value = localStorage.getItem(STORAGE_DUMP) || '';
     }
 
-    function saveDump() {
-      localStorage.setItem(STORAGE_DUMP, brainDump.value);
+    /* ─── Date helpers ─── */
+    function daysDiff(ds) {
+      if (!ds) return null;
+      const now = new Date(); now.setHours(0,0,0,0);
+      return Math.ceil((new Date(ds + 'T00:00:00') - now) / 86400000);
     }
 
-    function formatDueDate(dateString) {
-      if (!dateString) return 'Sin fecha límite';
-      const date = new Date(dateString + 'T00:00:00');
-      return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    function fmtDate(ds) {
+      if (!ds) return null;
+      return new Date(ds + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
     }
 
-    function isUrgentDate(dateString) {
-      if (!dateString) return false;
-      const now = new Date();
-      const due = new Date(dateString + 'T23:59:59');
-      const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
-      return diffDays >= 0 && diffDays <= 2;
+    function taskGroup(task) {
+      if (task.completed) return 'done';
+      const d = daysDiff(task.dueDate);
+      if (d === null) return 'later';
+      if (d <= 0) return 'today';
+      if (d <= 6) return 'week';
+      return 'later';
     }
 
-    function compareTasks(a, b) {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    function sortByDate(a, b) {
       if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
       if (a.dueDate) return -1;
       if (b.dueDate) return 1;
       return new Date(a.createdAt) - new Date(b.createdAt);
     }
 
-    function getMostUrgentTask() {
-      const openTasks = tasks.filter(task => !task.completed);
-      if (!openTasks.length) return null;
-      return openTasks.sort(compareTasks)[0];
-    }
-
+    /* ─── Render task list ─── */
     function renderTasks() {
-      taskList.innerHTML = '';
-      const visibleTasks = [...tasks].sort(compareTasks);
-      if (!visibleTasks.length) {
-        taskList.innerHTML = '<div class="empty-state">No hay tareas aún. Añade algo pequeño y comienza.</div>';
+      const container = document.getElementById('taskList');
+      container.innerHTML = '';
+
+      const groups = { today: [], week: [], later: [], done: [] };
+      tasks.forEach(t => groups[taskGroup(t)].push(t));
+      Object.values(groups).forEach(g => g.sort(sortByDate));
+
+      const hasAny = Object.values(groups).some(g => g.length);
+      if (!hasAny) {
+        container.innerHTML = '<div class="empty-state">No hay tareas aún. Añade algo pequeño y empieza.</div>';
         return;
       }
 
-      visibleTasks.forEach(task => {
-        const item = document.createElement('article');
-        item.className = 'task-item';
+      if (groups.today.length)  appendGroup(container, 'Hoy',          groups.today,  true);
+      if (groups.week.length)   appendGroup(container, 'Esta semana',  groups.week,   false);
+      if (groups.later.length)  appendGroup(container, 'Más adelante', groups.later,  false);
+      if (groups.done.length)   appendGroup(container, 'Completadas',  groups.done,   false);
+    }
 
-        const content = document.createElement('div');
-        content.className = 'task-content';
+    function appendGroup(container, label, taskArr, urgent) {
+      const lbl = document.createElement('div');
+      lbl.className = 'group-label' + (urgent ? ' urgent' : '');
+      lbl.textContent = label;
+      container.appendChild(lbl);
 
-        const title = document.createElement('h3');
-        title.className = 'task-title' + (task.completed ? ' completed' : '');
-        title.textContent = task.title;
+      const list = document.createElement('div');
+      list.className = 'task-list';
+      taskArr.forEach(task => list.appendChild(makeTaskEl(task)));
+      container.appendChild(list);
+    }
 
-        const meta = document.createElement('div');
-        meta.className = 'task-meta';
+    function makeTaskEl(task) {
+      const d = daysDiff(task.dueDate);
+      const isUrgent = !task.completed && d !== null && d <= 0;
 
-        const dueBadge = document.createElement('span');
-        dueBadge.className = 'badge' + (isUrgentDate(task.dueDate) && !task.completed ? ' urgent' : '');
-        dueBadge.textContent = formatDueDate(task.dueDate);
+      const item = document.createElement('div');
+      item.className = 'task-item' + (isUrgent ? ' urgent-task' : '');
 
-        if (task.completed) {
-          const doneBadge = document.createElement('span');
-          doneBadge.className = 'badge';
-          doneBadge.textContent = 'Completada';
-          meta.append(dueBadge, doneBadge);
-        } else {
-          meta.append(dueBadge);
-        }
-
-        content.append(title, meta);
-
-        const actions = document.createElement('div');
-        actions.className = 'task-actions';
-
-        const toggleBtn = document.createElement('button');
-        toggleBtn.type = 'button';
-        toggleBtn.className = 'complete-btn';
-        toggleBtn.textContent = task.completed ? 'Desmarcar' : 'Marcar como hecho';
-        toggleBtn.addEventListener('click', () => {
-          task.completed = !task.completed;
-          saveTasks();
-          renderTasks();
-          if (isFocusedView) showFocusView();
-        });
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.type = 'button';
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.textContent = 'Eliminar';
-        deleteBtn.addEventListener('click', () => {
-          tasks = tasks.filter(t => t.id !== task.id);
-          saveTasks();
-          renderTasks();
-          if (isFocusedView) showFocusView();
-        });
-
-        actions.append(toggleBtn, deleteBtn);
-        item.append(content, actions);
-        taskList.appendChild(item);
+      const check = document.createElement('div');
+      check.className = 'task-check' + (task.completed ? ' done' : '');
+      check.addEventListener('click', () => {
+        task.completed = !task.completed;
+        saveTasks(); renderTasks();
+        if (activeSection === 'focus') renderFocus();
       });
-    }
 
-    function showFocusView() {
-      const urgentTask = getMostUrgentTask();
-      if (!urgentTask) {
-        focusContent.innerHTML = '<div class="empty-state">No hay tareas urgentes pendientes. Añade una tarea para continuar.</div>';
-      } else {
-        focusContent.innerHTML = '';
-        const card = document.createElement('div');
-        card.className = 'focus-card';
+      const body = document.createElement('div');
+      body.className = 'task-body';
 
-        const title = document.createElement('h3');
-        title.className = 'task-title';
-        title.textContent = urgentTask.title;
+      const title = document.createElement('div');
+      title.className = 'task-title' + (task.completed ? ' done-text' : '');
+      title.textContent = task.title;
+      body.appendChild(title);
 
-        const meta = document.createElement('div');
-        meta.className = 'task-meta';
-
-        const dueBadge = document.createElement('span');
-        dueBadge.className = 'badge' + (isUrgentDate(urgentTask.dueDate) ? ' urgent' : '');
-        dueBadge.textContent = formatDueDate(urgentTask.dueDate);
-
-        meta.append(dueBadge);
-        card.append(title, meta);
-        focusContent.appendChild(card);
+      if (task.dueDate) {
+        const dt = document.createElement('div');
+        dt.className = 'task-date' + (isUrgent ? ' urgent' : '');
+        dt.textContent = fmtDate(task.dueDate);
+        body.appendChild(dt);
       }
-      focusPanel.classList.add('active');
-      isFocusedView = true;
-      focusButton.disabled = true;
+
+      const del = document.createElement('button');
+      del.className = 'del-btn';
+      del.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+      del.addEventListener('click', () => {
+        tasks = tasks.filter(t => t.id !== task.id);
+        saveTasks(); renderTasks();
+        if (activeSection === 'focus') renderFocus();
+      });
+
+      item.append(check, body, del);
+      return item;
     }
 
-    function hideFocusView() {
-      focusPanel.classList.remove('active');
-      isFocusedView = false;
-      focusButton.disabled = false;
+    /* ─── Focus section ─── */
+    function urgentTask() {
+      return tasks.filter(t => !t.completed).sort(sortByDate)[0] || null;
     }
 
-    taskForm.addEventListener('submit', event => {
-      event.preventDefault();
-      const title = taskTitle.value.trim();
+    function renderFocus() {
+      const container = document.getElementById('focusContent');
+      container.innerHTML = '';
+      const task = urgentTask();
+
+      if (!task) {
+        container.innerHTML = '<div class="focus-wrap"><div class="empty-state" style="max-width:360px">Sin tareas pendientes. Disfruta el momento.</div></div>';
+        return;
+      }
+
+      const d = daysDiff(task.dueDate);
+      const isUrgent = d !== null && d <= 0;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'focus-wrap';
+
+      const card = document.createElement('div');
+      card.className = 'focus-card';
+
+      const eye = document.createElement('div');
+      eye.className = 'focus-eyebrow';
+      eye.textContent = 'Ahora mismo';
+
+      const ttl = document.createElement('div');
+      ttl.className = 'focus-task-title';
+      ttl.textContent = task.title;
+
+      card.append(eye, ttl);
+
+      if (task.dueDate) {
+        const dt = document.createElement('div');
+        dt.className = 'task-date focus-task-date' + (isUrgent ? ' urgent' : '');
+        dt.textContent = fmtDate(task.dueDate);
+        card.appendChild(dt);
+      }
+
+      const actions = document.createElement('div');
+      actions.className = 'focus-actions';
+
+      const doneBtn = document.createElement('button');
+      doneBtn.className = 'primary-btn';
+      doneBtn.textContent = 'Marcar como hecho';
+      doneBtn.addEventListener('click', () => {
+        task.completed = true;
+        saveTasks(); renderTasks(); renderFocus();
+      });
+
+      const skipBtn = document.createElement('button');
+      skipBtn.className = 'secondary-btn';
+      skipBtn.textContent = 'Ver todas las tareas';
+      skipBtn.addEventListener('click', () => switchSection('tasks'));
+
+      actions.append(doneBtn, skipBtn);
+      card.appendChild(actions);
+      wrap.appendChild(card);
+      container.appendChild(wrap);
+    }
+
+    /* ─── Task form ─── */
+    document.getElementById('taskForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const titleEl = document.getElementById('taskTitle');
+      const dateEl  = document.getElementById('taskDate');
+      const title = titleEl.value.trim();
       if (!title) return;
       tasks.push({
         id: Date.now().toString(),
         title,
-        dueDate: taskDate.value || '',
+        dueDate: dateEl.value || '',
         completed: false,
         createdAt: new Date().toISOString()
       });
       saveTasks();
-      taskTitle.value = '';
-      taskDate.value = '';
+      titleEl.value = '';
+      dateEl.value = '';
       renderTasks();
-      if (isFocusedView) hideFocusView();
     });
 
-    focusButton.addEventListener('click', () => {
-      showFocusView();
-      taskList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    /* ─── Dump autosave ─── */
+    document.getElementById('brainDump').addEventListener('input', () => {
+      localStorage.setItem(STORAGE_DUMP, document.getElementById('brainDump').value);
     });
 
-    backButton.addEventListener('click', () => {
-      hideFocusView();
-    });
-
-    brainDump.addEventListener('input', () => {
-      saveDump();
-    });
-
-    function init() {
-      loadTasks();
-      loadDump();
-      renderTasks();
-    }
-
-    init();
+    /* ─── Init ─── */
+    loadTasks();
+    loadDump();
+    renderTasks();
   </script>
 </body>
 </html>
