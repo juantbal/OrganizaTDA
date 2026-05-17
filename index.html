@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrganizaTDA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #1a1a2e;
+      --text: #e0e0e0;
+      --muted: #9a9abb;
+      --accent: #e8824a;
+      --accent-dark: #d2693a;
+      --card: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(232, 130, 74, 0.2);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: radial-gradient(circle at top, rgba(232, 130, 74, 0.12), transparent 30%), var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    body {
+      padding: 0;
+    }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 92px 20px 40px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: rgba(26, 26, 46, 0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 18px 20px 12px;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 2.6rem);
+      letter-spacing: -0.04em;
+    }
+
+    p.lead {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(232,130,74,0.2);
+      background: rgba(232,130,74,0.12);
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .primary-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      box-shadow: 0 20px 45px rgba(232,130,74,0.2);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .section {
+      margin-top: 26px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+    }
+
+    .task-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    .field-row input[type="text"], .field-row input[type="date"], textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 14px 16px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .field-row input::placeholder, textarea::placeholder {
+      color: rgba(224,224,224,0.55);
+    }
+
+    .task-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .task-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .task-content {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .task-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .task-title.completed {
+      text-decoration: line-through;
+      color: rgba(224,224,224,0.6);
+      font-weight: 500;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .badge.urgent {
+      background: rgba(232,130,74,0.18);
+      color: #ffffff;
+      border: 1px solid rgba(232,130,74,0.35);
+    }
+
+    .task-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .task-actions button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      transition: background 0.2s ease;
+    }
+
+    .task-actions button:hover {
+      background: rgba(255,255,255,0.14);
+    }
+
+    .task-actions .complete-btn {
+      color: var(--accent);
+    }
+
+    .task-actions .delete-btn {
+      color: #ff8383;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 20px;
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: -10px;
+    }
+
+    .empty-state {
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      color: var(--muted);
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .focus-panel {
+      background: rgba(26,26,46,0.96);
+      border: 1px solid rgba(232,130,74,0.2);
+      border-radius: 28px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      display: none;
+      gap: 22px;
+    }
+
+    .focus-panel.active {
+      display: grid;
+    }
+
+    .focus-panel h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+
+    .focus-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .focus-card .task-title {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .secondary-btn {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: transparent;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    @media (max-width: 560px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+
+      .task-item {
+        grid-template-columns: 1fr;
+      }
+
+      .task-actions {
+        align-items: stretch;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>OrganizaTDA</h1>
+        <p class="lead">Gestión personal adaptada para tu atención. Menos ruido, más acción.</p>
+      </div>
+      <button id="focusButton" class="primary-btn">¿Qué hago ahora?</button>
+    </div>
+  </header>
+  <main>
+    <section class="section">
+      <div class="card">
+        <h2>Nueva tarea</h2>
+        <form id="taskForm" class="task-form" autocomplete="off">
+          <input id="taskTitle" type="text" placeholder="Qué quieres hacer" required />
+          <div class="field-row">
+            <input id="taskDate" type="date" />
+            <button type="submit" class="primary-btn">Añadir tarea</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card focus-panel" id="focusPanel">
+        <div class="focus-header">
+          <h2>Enfoque ahora</h2>
+          <p class="note">Solo la tarea más urgente para ayudarte a concentrarte.</p>
+        </div>
+        <div id="focusContent"></div>
+        <div class="actions-row">
+          <button id="backButton" class="secondary-btn">Volver a la vista normal</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">
+          <h2>Lista de tareas</h2>
+        </div>
+        <div id="taskList" class="task-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Dump mental</h2>
+        <p class="note">Escribe sin estructura. Se guarda automáticamente.</p>
+        <textarea id="brainDump" placeholder="Vacíalo todo aquí..."></textarea>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_TASKS = 'organizaTDA-tasks';
+    const STORAGE_DUMP = 'organizaTDA-dump';
+
+    const taskForm = document.getElementById('taskForm');
+    const taskTitle = document.getElementById('taskTitle');
+    const taskDate = document.getElementById('taskDate');
+    const taskList = document.getElementById('taskList');
+    const brainDump = document.getElementById('brainDump');
+    const focusButton = document.getElementById('focusButton');
+    const focusPanel = document.getElementById('focusPanel');
+    const focusContent = document.getElementById('focusContent');
+    const backButton = document.getElementById('backButton');
+
+    let tasks = [];
+    let isFocusedView = false;
+
+    function loadTasks() {
+      const saved = localStorage.getItem(STORAGE_TASKS);
+      tasks = saved ? JSON.parse(saved) : [];
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_TASKS, JSON.stringify(tasks));
+    }
+
+    function loadDump() {
+      brainDump.value = localStorage.getItem(STORAGE_DUMP) || '';
+    }
+
+    function saveDump() {
+      localStorage.setItem(STORAGE_DUMP, brainDump.value);
+    }
+
+    function formatDueDate(dateString) {
+      if (!dateString) return 'Sin fecha límite';
+      const date = new Date(dateString + 'T00:00:00');
+      return date.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+
+    function isUrgentDate(dateString) {
+      if (!dateString) return false;
+      const now = new Date();
+      const due = new Date(dateString + 'T23:59:59');
+      const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 2;
+    }
+
+    function compareTasks(a, b) {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      if (a.dueDate && b.dueDate) return new Date(a.dueDate) - new Date(b.dueDate);
+      if (a.dueDate) return -1;
+      if (b.dueDate) return 1;
+      return new Date(a.createdAt) - new Date(b.createdAt);
+    }
+
+    function getMostUrgentTask() {
+      const openTasks = tasks.filter(task => !task.completed);
+      if (!openTasks.length) return null;
+      return openTasks.sort(compareTasks)[0];
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = '';
+      const visibleTasks = [...tasks].sort(compareTasks);
+      if (!visibleTasks.length) {
+        taskList.innerHTML = '<div class="empty-state">No hay tareas aún. Añade algo pequeño y comienza.</div>';
+        return;
+      }
+
+      visibleTasks.forEach(task => {
+        const item = document.createElement('article');
+        item.className = 'task-item';
+
+        const content = document.createElement('div');
+        content.className = 'task-content';
+
+        const title = document.createElement('h3');
+        title.className = 'task-title' + (task.completed ? ' completed' : '');
+        title.textContent = task.title;
+
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+
+        const dueBadge = document.createElement('span');
+        dueBadge.className = 'badge' + (isUrgentDate(task.dueDate) && !task.completed ? ' urgent' : '');
+        dueBadge.textContent = formatDueDate(task.dueDate);
+
+        if (task.completed) {
+          const doneBadge = document.createElement('span');
+          doneBadge.className = 'badge';
+          doneBadge.textContent = 'Completada';
+          meta.append(dueBadge, doneBadge);
+        } else {
+          meta.append(dueBadge);
+        }
+
+        content.append(title, meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'task-actions';
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'complete-btn';
+        toggleBtn.textContent = task.completed ? 'Desmarcar' : 'Marcar como hecho';
+        toggleBtn.addEventListener('click', () => {
+          task.completed = !task.completed;
+          saveTasks();
+          renderTasks();
+          if (isFocusedView) showFocusView();
+        });
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.textContent = 'Eliminar';
+        deleteBtn.addEventListener('click', () => {
+          tasks = tasks.filter(t => t.id !== task.id);
+          saveTasks();
+          renderTasks();
+          if (isFocusedView) showFocusView();
+        });
+
+        actions.append(toggleBtn, deleteBtn);
+        item.append(content, actions);
+        taskList.appendChild(item);
+      });
+    }
+
+    function showFocusView() {
+      const urgentTask = getMostUrgentTask();
+      if (!urgentTask) {
+        focusContent.innerHTML = '<div class="empty-state">No hay tareas urgentes pendientes. Añade una tarea para continuar.</div>';
+      } else {
+        focusContent.innerHTML = '';
+        const card = document.createElement('div');
+        card.className = 'focus-card';
+
+        const title = document.createElement('h3');
+        title.className = 'task-title';
+        title.textContent = urgentTask.title;
+
+        const meta = document.createElement('div');
+        meta.className = 'task-meta';
+
+        const dueBadge = document.createElement('span');
+        dueBadge.className = 'badge' + (isUrgentDate(urgentTask.dueDate) ? ' urgent' : '');
+        dueBadge.textContent = formatDueDate(urgentTask.dueDate);
+
+        meta.append(dueBadge);
+        card.append(title, meta);
+        focusContent.appendChild(card);
+      }
+      focusPanel.classList.add('active');
+      isFocusedView = true;
+      focusButton.disabled = true;
+    }
+
+    function hideFocusView() {
+      focusPanel.classList.remove('active');
+      isFocusedView = false;
+      focusButton.disabled = false;
+    }
+
+    taskForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const title = taskTitle.value.trim();
+      if (!title) return;
+      tasks.push({
+        id: Date.now().toString(),
+        title,
+        dueDate: taskDate.value || '',
+        completed: false,
+        createdAt: new Date().toISOString()
+      });
+      saveTasks();
+      taskTitle.value = '';
+      taskDate.value = '';
+      renderTasks();
+      if (isFocusedView) hideFocusView();
+    });
+
+    focusButton.addEventListener('click', () => {
+      showFocusView();
+      taskList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    backButton.addEventListener('click', () => {
+      hideFocusView();
+    });
+
+    brainDump.addEventListener('input', () => {
+      saveDump();
+    });
+
+    function init() {
+      loadTasks();
+      loadDump();
+      renderTasks();
+    }
+
+    init();
+  </script>
+</body>
+</html>
